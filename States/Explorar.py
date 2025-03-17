@@ -12,7 +12,7 @@ class Explorar(State):
 
     def Update(self, perception):
         percepciones = Diccionario(perception)  
-        action = random.randint(1, 4)
+        action = 0
         print("Vidas:", percepciones.vidas)
         print("Posición del agente en X:", percepciones.agent_x)
         return action, False
@@ -20,18 +20,11 @@ class Explorar(State):
     def Transit(self, perception):
         percepciones = Diccionario(perception) 
 
-        # if 2 in [percepciones.vecindario_derecha, percepciones.vecindario_izquierda, percepciones.vecindario_abajo, percepciones.vecindario_arriba]:
-        #     if random.randint(1, 10) <= 5:
-        #         return "Disparar"
-
-        # # Si hay un enemigo en linea
-        # if percepciones.EnemigoEnLinea():
-        #     return "Disparar"
-        
-        # Si veo al jugador
-        if percepciones.veJugador():
-            return "Disparar"
-
+        #if percepciones.veJugador():
+           # return "Disparar"
+        if percepciones.BalaDetectada():
+            print(" - - - - - - - - - - - Vot a Orientar - - - --  -- - - - - - -")
+            return "Orientar"
         return self.id
     
     def End(self):
