@@ -1,4 +1,6 @@
 from BaseAgent import BaseAgent
+import Navigator                    # llamará a Navigator para decidir el movimiento en cada turno.
+import PathFinder                   # llamará a PathFinder para saber si hay un camino libre o bloqueado.
 
 
 class SmartAgent(BaseAgent):
@@ -7,6 +9,49 @@ class SmartAgent(BaseAgent):
     def __init__(self, id, name):
         super().__init__(id, name)
         self.state = "Explorar"  # Estado inicial del agente
+        self.navigator = Navigator()
+        self.pathfinder = PathFinder()
+
+
+
+    def decide_goal(self, perception):
+        PLAYER_X, PLAYER_Y = perception[8], perception[9]
+        COMMAND_CENTER_X, COMMAND_CENTER_Y = perception[10], perception[11]
+
+        #SI el cmaino del jugador esta libre, vamos hcaai él
+        if self.pathfinder.camino_libre(perception[12], perception[13], PLAYER_X, PLAYER_Y, perception):
+            return PLAYER_X, PLAYER_Y
+        
+        return COMMAND_CENTER_X, COMMAND_CENTER_Y
+    
+
+    def update(self, perception):
+        AGENT_X, AGENT_Y = perception[12], perception[13]
+        GOAL_X, GOAL_Y = self.decide_goal(perception)
+
+        # Verificar si el camino está libre o si hay que tomar otra ruta
+        path_clear, alternative_move = self.pathfinder.is_path_clear(AGENT_X, AGENT_Y, GOAL_X, GOAL_Y, perception)
+
+        if path_clear:
+            action = self.navigator.decide_movement(AGENT_X, AGENT_Y, GOAL_X, GOAL_Y, perception)
+        else:
+            action = alternative_move  # Si el camino está bloqueado, usar la mejor alternativa
+
+        return action, False  # False = No disparamos aún
+
+
+
+
+
+
+
+
+
+
+#Revisra si es necesrio.................................................................
+
+
+
 
 
 #Actualizamos la funcion que va a realizar las acciones
@@ -52,9 +97,10 @@ class SmartAgent(BaseAgent):
         print("Toma de decisiones del agente")
         #Transicion de estados
         if self.state == "Explorar":
-            if perception[0,1,2,3]==4:
-                self.state="Dis++++++parar"
-            self.state="EstadoACambiar"
+            #if perception[0,1,2,3]==4:
+                #self.state="Dis++++++parar"
+            #self.state="EstadoACambiar"
+            self.move(perception)
 
         elif self.state == "Disparar":
             
@@ -67,7 +113,10 @@ class SmartAgent(BaseAgent):
         elif self.state=="Esquivar":
 
             self.state="EstadoACambiar"
-        
+
+
+
+
         # Las acciones que puede hacer el agente a nivle del movimeinto
         MOVE_UP = 1
         MOVE_DOWN = 2
@@ -87,4 +136,35 @@ class SmartAgent(BaseAgent):
         #     action = MOVE_UP
 
         # return action, False
+    
+
+#Definimso la fucnion del movimiento
+def move(self, perception):
+    
+    #Definimos las posiciones
+    Jugador_P_X = perception [8]
+    Jugador_P_Y = perception [9]
+    Agent_X= perception[12]
+    Agent_Y = perception [13]
+
+    # Las acciones que puede hacer el agente a nivle del movimeinto
+    MOVE_UP = 1
+    MOVE_DOWN = 2
+    MOVE_RIGHT = 3
+    MOVE_LEFT = 4
+    NOTHING = 0
+
+    #Realizamos la logica dle movimiento
+    action = NOTHING;
+    if Jugador_P_X > Agent_X:
+        action = MOVE_RIGHT
+    if Jugador_P_Y < Agent_Y:
+        action = MOVE_LEFT
+    if Jugador_P_Y > Agent_Y:
+        action = MOVE_DOWN
+    if Jugador_P_X < Agent_X:
+        action = MOVE_UP
+    
+    return action, True
+
     
