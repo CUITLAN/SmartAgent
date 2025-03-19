@@ -49,7 +49,11 @@ class SmartAgent(BaseAgent):
                 self.state = "Explorar"
 
         elif self.state == "Esquivar":
+            if percepciones["VecindarioAbajo"] == 5:
+                direccion_bala = DOWN;
+
             self.state = "Explorar"
+            return NOTHING, False
 
         print(f"Estado después: {self.state}")
         return 0, False  # No dispara por defecto
@@ -75,3 +79,60 @@ class SmartAgent(BaseAgent):
             action = MOVE_UP
 
         return action
+
+def dodge(self, perception):
+    MOVE_UP = 1
+    MOVE_DOWN = 2
+    MOVE_RIGHT = 3
+    MOVE_LEFT = 4
+    NOTHING = 0
+
+    #Ver donde esta la bala y a que distancia se encuentra
+    if perception["VecindarioArriba"] == 5:
+        direccion_bala = MOVE_UP
+        distancia_bala = perception["Dist_VecinArri"]
+    elif perception["VecindarioAbajo"] == 5:
+        direccion_bala = MOVE_DOWN
+        distancia_bala = perception["Dist_VecinAba"]
+    elif perception["VecindarioDerecha"] == 5:
+        direccion_bala = MOVE_RIGHT
+        distancia_bala = perception["Dist_VecinDere"]
+    elif perception["VecindarioIzquierda"] == 5:
+        direccion_bala = MOVE_LEFT
+        distancia_bala = perception["Dist_VecinIzq"]
+
+    #Ver si el agente esta mirando a la bala -> Disparar
+    if perception["Disparar"] and direccion_bala == perception["Agent_Direccion"]:
+        self.state = "Disparar"
+        return NOTHING, False
+    
+    #Si no puede disparar y la bala esta lejos -> Huir
+    if distancia_bala > 5:
+        self.state = "Explorar"
+        if perception["Dist_VecinIzq"] > 1 and direccion_bala != MOVE_LEFT:
+            movimiento = MOVE_LEFT
+            distancia = perception["Dist_VecinIzq"]
+        elif perception["Dist_VecinDere"] > distancia and direccion_bala != MOVE_RIGHT:
+            movimiento = MOVE_RIGHT
+            distancia = perception["Dist_VecinDere"]
+        elif perception["Dist_VecinArri"] > distancia and direccion_bala != MOVE_UP:
+            movimiento = MOVE_RIGHT
+            distancia = perception["Dist_VecinArri"]
+        elif perception["Dist_VecinAba"] and direccion_bala != MOVE_DOWN:
+            movimiento = MOVE_DOWN
+            distancia = perception["Dist_VecinAba"]
+        return movimiento, False
+
+    #Si la bala esta cerca pero no puede disparar -> Orientar y disparar
+    self.state = "Disparar" #Si al final no es ninguno de estos casos volvera a Explorar
+    if direccion_bala == MOVE_UP and perception["Agent_Direccion"] != MOVE_UP:
+        return MOVE_UP, False
+    elif direccion_bala == MOVE_DOWN and perception["Agent_Direccion"] != MOVE_DOWN:
+        return MOVE_DOWN, False
+    elif direccion_bala == MOVE_RIGHT and perception["Agent_Direccion"] != MOVE_RIGHT:
+        return MOVE_RIGHT, False
+    elif direccion_bala == MOVE_LEFT and perception["Agent_Direccion"] != MOVE_LEFT:
+        return MOVE_LEFT, False
+
+    self.state = "Explorar"
+    return NOTHING, False
