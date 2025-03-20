@@ -34,39 +34,33 @@ class Esquivar(State):
         elif percepciones.vecindario_derecha == 5:
             direccion_bala = MOVE_RIGHT
             distancia_bala = percepciones.dist_vecin_dere
-        elif hasattr(percepciones, "vecindario_izquierda") and percepciones.vecindario_izquierda == 5:
+        elif percepciones.vecindario_izquierda == 5:
             direccion_bala = MOVE_LEFT
-            distancia_bala = getattr(percepciones, "dist_vecin_izq", 0)
-
+            distancia_bala = percepciones.dist_vecin_izq
+        
         print("Esquivar: Dirección de bala:", direccion_bala, "Distancia:", distancia_bala)
 
         threshold = 3  
 
-        if distancia_bala is not None and distancia_bala > threshold:
+        if percepciones.disparar == 0 and distancia_bala >= 5:
             self.next_state = "Explorar"
-            movimiento = NOTHING
-            
-            if hasattr(percepciones, "dist_vecin_izq") and percepciones.dist_vecin_izq > 1 and direccion_bala != MOVE_LEFT:
+            if percepciones.dist_vecin_izq > 1 and direccion_bala != MOVE_LEFT:
                 movimiento = MOVE_LEFT
-            elif hasattr(percepciones, "dist_vecin_dere") and percepciones.dist_vecin_dere > 1 and direccion_bala != MOVE_RIGHT:
+                distancia = percepciones.dist_vecin_izq
+            elif percepciones.dist_vecin_dere > distancia and direccion_bala != MOVE_RIGHT:
                 movimiento = MOVE_RIGHT
-            elif hasattr(percepciones, "dist_vecin_arri") and percepciones.dist_vecin_arri > 1 and direccion_bala != MOVE_UP:
+                distancia = percepciones.dist_vecin_dere
+            elif percepciones.dist_vecin_arri > distancia and direccion_bala != MOVE_UP:
                 movimiento = MOVE_UP
-            elif hasattr(percepciones, "dist_vecin_aba") and percepciones.dist_vecin_aba > 1 and direccion_bala != MOVE_DOWN:
+                distancia = percepciones. dist_vecin_arri
+            elif percepciones.dist_vecin_aba > distancia and direccion_bala != MOVE_DOWN:
                 movimiento = MOVE_DOWN
-            
-            print("Esquivar: Huyendo con movimiento:", movimiento)
             return movimiento, False
+        
+        if distancia_bala < 5:
+            self.next_state = "Disparar"
+            return direccion_bala, False
 
-        self.next_state = "Disparar"
-        if direccion_bala == MOVE_UP:
-            return MOVE_DOWN, False
-        elif direccion_bala == MOVE_DOWN:
-            return MOVE_UP, False
-        elif direccion_bala == MOVE_RIGHT:
-            return MOVE_LEFT, False
-        elif direccion_bala == MOVE_LEFT:
-            return MOVE_RIGHT, False
     def Transit(self, perception):
         percepciones = Diccionario()
         if percepciones.VeJugadorenEjeX or percepciones.veJugadorEnEjeY:
