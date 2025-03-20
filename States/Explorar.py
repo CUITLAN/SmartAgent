@@ -1,6 +1,5 @@
 from Diccionario import Diccionario
 from State import State
-import random
 
 class Explorar(State):
 
@@ -12,19 +11,25 @@ class Explorar(State):
 
     def Update(self, perception):
         percepciones = Diccionario(perception)  
-        action = 0
-        print("Vidas:", percepciones.vidas)
-        print("Posición del agente en X:", percepciones.agent_x)
+        objetivo_x, objetivo_y, objetivo_nombre = percepciones.FijarObjetivo()
+        print(f"Objetivo fijado: {objetivo_nombre} en ({objetivo_x}, {objetivo_y})")
+        action = percepciones.moverHaciaObjetivo()
         return action, False
 
     def Transit(self, perception):
         percepciones = Diccionario(perception) 
-
-        #if percepciones.veJugador():
-           # return "Disparar"
-        if percepciones.BalaDetectada():
-            print(" - - - - - - - - - - - Vot a Orientar - - - --  -- - - - - - -")
+        if percepciones.DestruirBloque():
+            return "Disparar"
+        if percepciones.veJugadorCercano():
+            return "Disparar"
+        if percepciones.veJugadorEnEjeY():
+            return "Disparar"
+        if percepciones.VeJugadorenEjeX():
+            return "Disparar"
+        if percepciones.DeteccionBala():
             return "Orientar"
+        if percepciones.BalaEnDistanciaMayor():
+            return "Esquivar"
         return self.id
     
     def End(self):

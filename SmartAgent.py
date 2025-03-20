@@ -2,7 +2,7 @@
 from BaseAgent import BaseAgent
 from States.Disparar import Disparar
 from States.Explorar import Explorar
-#from States.Esquivar import Esquivar
+from States.Esquivar import Esquivar
 from States.Orientar import Orientar
 from StateMachine import StateMachine
 
@@ -14,7 +14,7 @@ class SmartAgent(BaseAgent):
         Estados = {
             "Disparar": Disparar("Disparar"),
             "Explorar": Explorar("Explorar"),
-            # "Esquivar": Esquivar("Esquivar"),
+            "Esquivar": Esquivar("Esquivar"),
             "Orientar": Orientar("Orientar")
         }
 

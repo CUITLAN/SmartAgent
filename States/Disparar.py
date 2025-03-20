@@ -10,11 +10,13 @@ class Disparar(State):
         print("Estado: Disparar iniciado")
 
     def Update(self, perception):
-        print("Disparando 🔫  - - - - ")
-        return 0, True
+        percepciones = Diccionario(perception)
+        action = percepciones.moverHaciaObjetivo()
+        return action, True
+
 
     def Transit(self, perception):   
-    
+        
         return "Explorar"
     
     def End(self):
