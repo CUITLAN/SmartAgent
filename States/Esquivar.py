@@ -7,7 +7,7 @@ class Esquivar(State):
         self.next_state = id 
 
     def Start(self):
-        print("Estado: Esquivar iniciado")
+        print("Estado: Esquivar iniciado- - - - - - - - -")
         self.next_state = self.id
 
     def Update(self, perception):
